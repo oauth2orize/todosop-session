@@ -40,17 +40,18 @@ var as = oauth2orize.createServer();
 as.grant(openid.extensions());
 as.grant(require('oauth2orize-response-mode').extensions());
 
-as.grant(oauth2orize.grant.code(function issue(client, redirectURI, user, ares, cb) {
+as.grant(oauth2orize.grant.code(function issue(client, redirectURI, user, ares, areq, locals, cb) {
   crypto.randomBytes(32, function(err, buffer) {
     if (err) { return cb(err); }
     var code = buffer.toString('base64');
     var expiresAt = new Date(Date.now() + 600000); // 10 minutes from now
-    db.run('INSERT INTO authorization_codes (client_id, redirect_uri, user_id, grant_id, scope, expires_at, code) VALUES (?, ?, ?, ?, ?, ?, ?)', [
+    db.run('INSERT INTO authorization_codes (client_id, redirect_uri, user_id, grant_id, scope, session_id, expires_at, code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
       client.id,
       redirectURI,
       user.id,
       ares.grant.id,
       ares.scope.join(' '),
+      locals.sessionID,
       dateFormat(expiresAt, 'yyyy-mm-dd HH:MM:ss', true),
       code
     ], function(err) {
@@ -144,6 +145,7 @@ as.exchange(oauth2orize.exchange.code(function issue(client, code, redirectURI, 
           if (user.phone_number) { claims.phone_number = user.phone_number; }
           if (user.phone_number_verified) { claims.phone_number_verified = user.phone_number_verified; }
         }
+        claims.sid = row.session_id;
         claims.iat = Math.floor(now / 1000); // now, in seconds
         claims.exp = Math.floor(now / 1000) + 3600; // 1 hour from now, in seconds
       
@@ -159,6 +161,7 @@ as.exchange(oauth2orize.exchange.code(function issue(client, code, redirectURI, 
       });
     }
   ], function(err, row, accessToken, refreshToken, params) {
+    // TODO: delete authorization code
     if (err) { return cb(err); }
     return cb(null, accessToken, refreshToken, params);
   });
@@ -303,6 +306,11 @@ function interact(req, res, next) {
 var router = express.Router();
 
 router.get('/authorize',
+  function(req, res, next) {
+    req.locals = {};
+    req.locals.sessionID = req.session.id;
+    next();
+  },
   as.authorize(function validate(clientID, redirectURI, cb) {
     db.get('SELECT * FROM clients WHERE id = ?', [ clientID ], function(err, row) {
       if (err) { return cb(err); }
@@ -322,6 +330,7 @@ router.get('/authorize',
 
 router.get('/continue',
   function(req, res, next) {
+    res.locals.sessionID = req.session.id;
     res.locals.grantID = req.query.grant_id;
     res.locals.scope = req.query.scope ? req.query.scope.split(' ') : undefined;
     next();

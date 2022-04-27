@@ -37,6 +37,7 @@ db.serialize(function() {
     user_id INTEGER NOT NULL, \
     grant_id INTEGER NOT NULL, \
     scope TEXT, \
+    session_id TEXT, \
     issued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, \
     expires_at DATETIME NOT NULL, \
     code TEXT UNIQUE NOT NULL \
