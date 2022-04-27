@@ -9,6 +9,7 @@ var async = require('async');
 var url = require('url');
 var qs = require('querystring');
 var crypto = require('crypto');
+var uid = require('uid-safe');
 var jws = require('jws');
 var dateFormat = require('dateformat');
 var db = require('../db');
@@ -57,6 +58,17 @@ as.grant(oauth2orize.grant.code(function issue(client, redirectURI, user, ares, 
       return cb(null, code);
     });
   });
+}, function extend(txn, cb) {
+  if (!txn.res.scope || txn.res.scope.indexOf('openid') == -1) { return cb(); }
+  
+  // TODO: Get this from session manager
+  var state = 'beef';
+  var uri = url.parse(txn.redirectURI);
+  var origin = uri.protocol + '//' + uri.host;
+  var salt = uid.sync(16);
+  var data = txn.client.id + ' ' + origin + ' ' + state + ' ' + salt;
+  var hash = crypto.createHash('sha256').update(data).digest('hex') + '.' + salt;
+  return cb(null, { session_state: hash });
 }));
 
 as.exchange(oauth2orize.exchange.code(function issue(client, code, redirectURI, cb) {

@@ -54,6 +54,7 @@
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
     "passport-oauth2-client-password": "^0.1.2",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "uid-safe": "^2.1.5"
   }
 }
