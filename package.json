@@ -1,0 +1,59 @@
+{
+  "name": "todosop-session",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OpenID Connect server using Express and OAuth2orize to provide identity information and session management.",
+  "keywords": [
+    "example",
+    "express",
+    "oauth2orize",
+    "passport",
+    "sqlite"
+  ],
+  "author": {
+    "name": "Jared Hanson",
+    "email": "jaredhanson@gmail.com",
+    "url": "https://www.jaredhanson.me/"
+  },
+  "homepage": "https://github.com/oauth2orize/todosop-session",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/oauth2orize/todosop-session.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oauth2orize/todosop-session/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/jaredhanson"
+  },
+  "license": "Unlicense",
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "async": "^3.2.3",
+    "connect-ensure-login": "^0.1.1",
+    "connect-sqlite3": "^0.9.13",
+    "cookie-parser": "~1.4.4",
+    "csurf": "^1.11.0",
+    "dateformat": "^4.6.3",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "express-session": "^1.17.2",
+    "http-errors": "~1.6.3",
+    "jws": "^4.0.0",
+    "mkdirp": "^1.0.4",
+    "morgan": "~1.9.1",
+    "oauth2orize": "^1.11.0",
+    "oauth2orize-openid": "^0.4.1",
+    "oauth2orize-response-mode": "^0.1.1",
+    "passport": "^0.5.2",
+    "passport-http": "^0.3.0",
+    "passport-http-bearer": "^1.0.1",
+    "passport-local": "^1.0.0",
+    "passport-oauth2-client-password": "^0.1.2",
+    "sqlite3": "^5.0.2"
+  }
+}
